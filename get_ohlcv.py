@@ -8,9 +8,7 @@ one_day_as_ts = 86400000
 half_day_as_ts = 43200000
 
 
-def get_ohlcv_data( symbol, pair, interval, start_date, end_date):
-    binance_client = ''
-    market_name = ''
+def get_ohlcv_data(symbol, pair, interval, start_date, end_date):
     binance_client_um = UMFutures()
     binance_client_cm = CMFutures()
     if pair == 'USDT' or pair == 'BUSD':
@@ -35,8 +33,7 @@ def get_ohlcv_data( symbol, pair, interval, start_date, end_date):
         time_substracted = one_day_as_ts * mnoznik
 
     elif interval == '5m':
-        mnoznik = 3
-        time_substracted = one_day_as_ts * mnoznik
+        time_substracted = half_day_as_ts
 
     elif interval == '15m':
         mnoznik = 10
@@ -66,12 +63,14 @@ def get_ohlcv_data( symbol, pair, interval, start_date, end_date):
             earlier_date = start_date
             last_iteration = True
         print(str(pd.to_datetime(earlier_date, unit='ms')) + ' earlier data')
-
+        limit = 1000
+        if interval == '5m':
+            limit = 500
 
         if earlier_date < end_date:
-
+            # trzeba przerobić na 500 limit wtedy muszę przerobić tak żeby
             my_kline = binance_client.klines(market_name, interval, startTime=earlier_date,
-                                                    endTime=end_date, limit=1000)
+                                                    endTime=end_date, limit=limit)
             my_kline.reverse()
             new_pd = pd.DataFrame(my_kline, columns=columns)
 
@@ -90,6 +89,11 @@ def get_ohlcv_data( symbol, pair, interval, start_date, end_date):
     new_order = ['date', 'time', 'Open', 'High', 'Low', 'Close', 'Volume', 'NumberOfTrades', 'TakerBuyVolume']
     df = df.reindex(columns=new_order)
 
+    return df
+    # if interval == '5m' and model_final_mode == :
+    #     pass
+
+def write_csv_ohlcv(df, market_name, interval):
     first_date_row = df['date'].iloc[0]
     last_date_row = df['date'].iloc[-1]
     df.to_csv(f'{market_name} {interval} {last_date_row} {first_date_row} .csv', index=False)
