@@ -4,6 +4,7 @@ from pprint import pprint
 
 import get_ohlcv
 
+
 class MenuController:
     def __init__(self, model_entry, manager_view):
         self.model_entry = model_entry
@@ -16,6 +17,7 @@ class MenuController:
 
     def manage_methods(self):
         self.store_setting()
+        self.choose_proper_method()
 
     def store_setting(self):
         self.model_entry.mode_data_merge = self.frame.mode_data_merge.get()
@@ -28,7 +30,20 @@ class MenuController:
         self.model_entry.calculate_final_mode()
         # pprint(vars(self.model_entry))
 
-    def get_ovlcv(self):
-        binance_client_um = UMFutures()
-        get_ohlcv.get_ohlcv_data(binance_client_um, self.model_entry.symbol, self.model_entry.pair, self.model_entry.interval,
-                                 self.model_entry.start_date, self.model_entry.end_date)
+    def choose_proper_method(self):
+        print(self.model_entry.final_mode)
+        print(self.model_entry.symbol)
+        if self.model_entry.final_mode == 'creating_data_ohlcv' and self.model_entry.pair != 'USD':
+            print('creating_data_ohlcv')
+            get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair, self.model_entry.interval,
+                                     self.model_entry.start_date, self.model_entry.end_date)
+
+        if self.model_entry.final_mode == 'creating_data_ohlcv' and self.model_entry.pair == 'USD':
+            print('metoda usd')
+            get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair, self.model_entry.interval,
+                                     self.model_entry.start_date, self.model_entry.end_date)
+
+
+
+
+
