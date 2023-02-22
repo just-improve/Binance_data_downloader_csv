@@ -7,14 +7,19 @@ class MenuView(Frame):
         self.grid_columnconfigure(0, weight=1)
 
         self.mode_data_merge = IntVar(self, 0)
-        self.create_radio_buttons(1, 'Tworzenie danych', 'Łączenie danych', self.mode_data_merge)
+        # self.create_radio_buttons(1, 'Tworzenie danych', 'Łączenie danych', self.mode_data_merge)
+        Radiobutton(self, text='Create data', variable=self.mode_data_merge, value=0, command=self.rb_create_merge_listener).grid(row=1, column=0, padx=10, pady=10)
+        Radiobutton(self, text='Merge data', variable=self.mode_data_merge, value=1, command=self.rb_create_merge_listener).grid(row=1, column=2, padx=10, pady=10)
 
         self.mode_data_oi = IntVar(self, 0)
-        self.create_radio_buttons(2, 'OHLCV', 'OHLCV + Oi', self.mode_data_oi)
+
+        Radiobutton(self, text='OHLCV', variable=self.mode_data_oi, value=0, command=self.rb_ohlcv_oi_listener).grid(row=2, column=0, padx=10, pady=10)
+        Radiobutton(self, text='OHLCV + Oi', variable=self.mode_data_oi, value=1, command=self.rb_ohlcv_oi_listener).grid(row=2, column=2, padx=10, pady=10)
 
         self.file_to_merge_entry = Entry(self)
-        self.file_to_merge_entry.insert(0, 'name file to merge')
+        self.file_to_merge_entry.insert(0, 'BTCUSDT 2023-02-15 2023-02-18 oi.csv')  #name file to merge
         self.file_to_merge_entry.grid(row=4, column=2, padx=10, pady=10)
+        self.file_to_merge_entry['state'] = 'disabled'
 
         label_symbol = Label(self, text='Symbol')
         label_symbol.grid(row=5, column=0, padx=10, pady=10)
@@ -65,5 +70,24 @@ class MenuView(Frame):
             count += 2
 
         #teoretycznie to lepiej by było stworzyć metodę na kliknięcie pobierającą do modela aktualny stan  radio buttona
+
+    def rb_ohlcv_oi_listener(self):
+        print(self.mode_data_oi.get())
+        if self.mode_data_oi.get() == 1:
+            self.interval_entry.delete(0, 'end')
+            self.interval_entry.insert(0, '5m')
+            self.interval_entry['state'] = 'disabled'
+        elif self.mode_data_oi.get() == 0:
+            self.interval_entry['state'] = 'normal'
+
+            pass  # trzeba zrobić, żeby startową datę sprawdzało i wtedy uzupełniało na maksymalnie 30 dni wstecz i uzupełniało interval na 5m i żeby znikał ten interval
+
+
+    def rb_create_merge_listener(self):
+        print(self.mode_data_merge.get())
+        if self.mode_data_merge.get() == 1:
+            self.file_to_merge_entry['state'] = 'normal'
+        elif self.mode_data_merge.get() == 0:
+            self.file_to_merge_entry['state'] = 'disabled'
 
 

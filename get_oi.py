@@ -2,6 +2,8 @@ import pandas as pd
 from binance.um_futures import UMFutures
 from binance.cm_futures import CMFutures
 
+import df_operations
+
 four_day_as_ts = 345600000
 two_day_as_ts = 172800000
 one_day_as_ts = 86400000
@@ -25,23 +27,7 @@ def get_oi_data(symbol, pair, start_date, end_date):
         print('wrong pair')
         return
 
-    time_substracted = one_day_as_ts   #market_name
-
-    if interval == '1m':
-        time_substracted = half_day_as_ts
-
-    elif interval == '3m':
-        mnoznik = 2
-        time_substracted = one_day_as_ts * mnoznik
-
-    elif interval == '5m':
-        # mnoznik = 3
-        # time_substracted = one_day_as_ts * mnoznik
-        time_substracted = half_day_as_ts
-
-    elif interval == '15m':
-        mnoznik = 10
-        time_substracted = one_day_as_ts * mnoznik
+    time_substracted = df_operations.calculate_time_substracted(interval)
 
     start_date = int(1000*(pd.to_datetime(start_date).timestamp()))  #'2017-08-16'
     end_date = int(1000*(pd.to_datetime(end_date).timestamp()))      #'2017-08-18'
@@ -62,42 +48,46 @@ def get_oi_data(symbol, pair, start_date, end_date):
 
             oi_hist = binance_client.open_interest_hist(market_name, interval, startTime=earlier_date,
                                                     endTime=end_date, limit=500)
-            print(oi_hist)
             oi_hist.reverse()
-
             if count == 0:
                 df = pd.DataFrame(oi_hist)
-                count+=1
+                count += 1
                 continue
-
             new_pd = pd.DataFrame(oi_hist)
-            print('zxc')
-            # print(new_pd)
-
             df = pd.merge(df, new_pd, how='outer')
-
 
         end_date = end_date - time_substracted
         earlier_date = earlier_date - time_substracted
-
 
     df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
     # print(df['timestamp'])
     df['date'] = df['timestamp'].dt.date
     df['time'] = df['timestamp'].dt.time
-    df.drop(['sumOpenInterestValue', 'timestamp'], axis='columns',
+    df.drop(['sumOpenInterestValue', 'timestamp', 'symbol'], axis='columns',
             inplace=True)
-    new_order = ['symbol','date', 'time', 'sumOpenInterest']
+    new_order = ['date', 'time', 'sumOpenInterest']
     df = df.reindex(columns=new_order)
     return df
 
 
-def merge_two_dataframes(df1, df2, market_name):
-    df = pd.merge(df1, df2, how='outer')
-    first_date_row = df['date'].iloc[0]
-    last_date_row = df['date'].iloc[-1]
 
-    df.to_csv(f'{market_name} {last_date_row} {first_date_row} oi.csv', index=False)
-
-    df.to_csv()
-    return df
+# def calculate_time_substracted(interval):
+#     time_substracted = one_day_as_ts
+#
+#     if interval == '1m':
+#         time_substracted = half_day_as_ts
+#
+#     elif interval == '3m':
+#         mnoznik = 2
+#         time_substracted = one_day_as_ts * mnoznik
+#
+#     elif interval == '5m':
+#         # mnoznik = 3
+#         # time_substracted = one_day_as_ts * mnoznik
+#         time_substracted = half_day_as_ts
+#
+#     elif interval == '15m':
+#         mnoznik = 10
+#         time_substracted = one_day_as_ts * mnoznik
+#
+#     return time_substracted
