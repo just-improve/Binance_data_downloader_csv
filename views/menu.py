@@ -7,7 +7,6 @@ class MenuView(Frame):
         self.grid_columnconfigure(0, weight=1)
 
         self.mode_data_merge = IntVar(self, 0)
-        # self.create_radio_buttons(1, 'Tworzenie danych', 'Łączenie danych', self.mode_data_merge)
         Radiobutton(self, text='Create data', variable=self.mode_data_merge, value=0, command=self.rb_create_merge_listener).grid(row=1, column=0, padx=10, pady=10)
         Radiobutton(self, text='Merge data', variable=self.mode_data_merge, value=1, command=self.rb_create_merge_listener).grid(row=1, column=2, padx=10, pady=10)
 
@@ -17,7 +16,7 @@ class MenuView(Frame):
         Radiobutton(self, text='OHLCV + Oi', variable=self.mode_data_oi, value=1, command=self.rb_ohlcv_oi_listener).grid(row=2, column=2, padx=10, pady=10)
 
         self.file_to_merge_entry = Entry(self)
-        self.file_to_merge_entry.insert(0, 'BTCUSDT 2023-02-15 2023-02-18 oi.csv')  #name file to merge
+        self.file_to_merge_entry.insert(0, 'XRPUSDT 2023-02-16 2023-02-20 oi.csv')  #name file to merge
         self.file_to_merge_entry.grid(row=4, column=2, padx=10, pady=10)
         self.file_to_merge_entry['state'] = 'disabled'
 
@@ -28,7 +27,7 @@ class MenuView(Frame):
         label_currency.grid(row=5, column=2, padx=10, pady=10)
 
         self.symbol_entry = Entry(self)
-        self.symbol_entry.insert(0,'BTC')
+        self.symbol_entry.insert(0,'XRP')
         self.symbol_entry.grid(row=6, column=0, padx=10, pady=10)
 
         self.pair_entry = Entry(self)
@@ -42,11 +41,11 @@ class MenuView(Frame):
         label_end_date.grid(row=7, column=2, padx=10, pady=10)
 
         self.start_date_entry = Entry(self)
-        self.start_date_entry.insert(0, '2023-02-16')
+        self.start_date_entry.insert(0, '2023-02-18')
         self.start_date_entry.grid(row=8, column=0, padx=10, pady=10)
 
         self.end_date_entry = Entry(self)
-        self.end_date_entry.insert(0, '2023-02-20')
+        self.end_date_entry.insert(0, '2023-02-22')
         self.end_date_entry.grid(row=8, column=2, padx=10, pady=10)
 
         label_interval = Label(self, text='Interval')
@@ -59,17 +58,7 @@ class MenuView(Frame):
         self.test_btn = Button(self, text="Pobierz dane")
         self.test_btn.grid(row=10, column=2, padx=10, pady=10)
 
-
-
-    def create_radio_buttons(self, row, text1, text2, mode_data):
-        values = {text1: 0,
-                  text2: 1}
-        count = 0
-        for (text, value) in values.items():
-            Radiobutton(self, text=text, variable=mode_data, value=value).grid(row=row, column=count, padx=10, pady=10)
-            count += 2
-
-        #teoretycznie to lepiej by było stworzyć metodę na kliknięcie pobierającą do modela aktualny stan  radio buttona
+    #teoretycznie to lepiej by było stworzyć metodę na kliknięcie pobierającą do modela aktualny stan  radio buttona
 
     def rb_ohlcv_oi_listener(self):
         print(self.mode_data_oi.get())

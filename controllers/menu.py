@@ -60,6 +60,7 @@ class MenuController:
                                                      self.model_entry.pair)
 
             print(df_read_to_merge)
+
         elif self.model_entry.final_mode == 'merging_data_oi':
             df_oi_read_to_merge = df_operations.read_csv_file(self.model_entry.file_name_to_merge)
             df_oi_read_to_merge = df_oi_read_to_merge.astype('object')
@@ -71,7 +72,11 @@ class MenuController:
                                        self.model_entry.start_date, self.model_entry.end_date)
             df_oi_ohlcv = df_operations.get_df_merge_two_dataframes_oi(df_ohlcv, df_oi) #self.model_entry.symbol, self.model_entry.pair
             df_oi_ohlcv = df_oi_ohlcv.astype('object')
+
+            # df_oi_ohlcv, df_oi_read_to_merge = df_operations.change_df_column_types(df_oi_ohlcv, df_oi_read_to_merge)
+            # df_common = df_operations.get_df_commons(df_oi_ohlcv, df_oi_read_to_merge)
             print('')
+            print('after debug')
             df_operations.merge_two_dataframes_oi(df_oi_ohlcv, df_oi_read_to_merge, self.model_entry.symbol, self.model_entry.pair)
 
 
