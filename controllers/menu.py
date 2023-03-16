@@ -5,6 +5,7 @@ from pprint import pprint
 import get_ohlcv
 import get_oi
 import df_operations
+import update_data
 
 
 class MenuController:
@@ -16,6 +17,7 @@ class MenuController:
 
     def _bind(self):
         self.frame.test_btn.config(command=self.manage_methods)
+        self.frame.update_data_btn.config(command=self.update_csv_files_in_directory)
 
     def manage_methods(self):
         self.store_setting()
@@ -35,48 +37,46 @@ class MenuController:
 
     def choose_proper_method(self):
         if self.model_entry.final_mode == 'creating_data_ohlcv': # and self.model_entry.mode_data_merge == 0:
+            print('creating_data_ohlcv')
             df = get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair, self.model_entry.interval,
                                      self.model_entry.start_date, self.model_entry.end_date)
+            '''types setting'''
             df_operations.save_df_to_csv(df, self.model_entry.symbol, self.model_entry.pair, self.model_entry.interval)
 
         elif self.model_entry.final_mode == 'creating_data_oi': #and self.model_entry.mode_data_merge == 0:
+            print('creating_data_oi')
             df_ohlcv = get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair, self.model_entry.interval,
                                      self.model_entry.start_date, self.model_entry.end_date)
 
             df_oi = get_oi.get_oi_data(self.model_entry.symbol, self.model_entry.pair,
                                      self.model_entry.start_date, self.model_entry.end_date)
-            df_operations.merge_two_dataframes_oi(df_ohlcv, df_oi, self.model_entry.symbol, self.model_entry.pair)
-
+            df_operations.merge_dfs_ovlcv_oi(df_ohlcv, df_oi, self.model_entry.symbol, self.model_entry.pair)
+        #
         elif self.model_entry.final_mode == 'merging_data_ohlcv':
+            print('merging_data_ohlcv')
             df_read_to_merge = df_operations.read_csv_file(self.model_entry.file_name_to_merge)
-            df_read_to_merge = df_read_to_merge.astype('object')
+
             df_ohlcv_created_to_merge = get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair,
                                                 self.model_entry.interval,
                                                 self.model_entry.start_date, self.model_entry.end_date)
-            df_ohlcv_created_to_merge = df_ohlcv_created_to_merge.astype('object')
 
             df_operations.merge_two_dataframes_ohlcv(df_ohlcv_created_to_merge, df_read_to_merge,
                                                      self.model_entry.interval, self.model_entry.symbol,
                                                      self.model_entry.pair)
-
-            print(df_read_to_merge)
+            #
+            # print(df_read_to_merge)
 
         elif self.model_entry.final_mode == 'merging_data_oi':
+            print('merging_data_oi')
             df_oi_read_to_merge = df_operations.read_csv_file(self.model_entry.file_name_to_merge)
-            df_oi_read_to_merge = df_oi_read_to_merge.astype('object')
             df_ohlcv = get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair,
                                                 self.model_entry.interval,
                                                 self.model_entry.start_date, self.model_entry.end_date)
 
             df_oi = get_oi.get_oi_data(self.model_entry.symbol, self.model_entry.pair,
                                        self.model_entry.start_date, self.model_entry.end_date)
-            df_oi_ohlcv = df_operations.get_df_merge_two_dataframes_oi(df_ohlcv, df_oi) #self.model_entry.symbol, self.model_entry.pair
-            df_oi_ohlcv = df_oi_ohlcv.astype('object')
-
-            # df_oi_ohlcv, df_oi_read_to_merge = df_operations.change_df_column_types(df_oi_ohlcv, df_oi_read_to_merge)
-            # df_common = df_operations.get_df_commons(df_oi_ohlcv, df_oi_read_to_merge)
-            print('')
-            print('after debug')
+            df_oi_ohlcv = df_operations.get_df_merge_two_dataframes_oi(df_ohlcv, df_oi)
+            #
             df_operations.merge_two_dataframes_oi(df_oi_ohlcv, df_oi_read_to_merge, self.model_entry.symbol, self.model_entry.pair)
 
 
@@ -84,6 +84,16 @@ class MenuController:
 
         # df1['column_name'] = df1['column_name'].astype('float64')
         # merged_df = pd.merge(df1, df2, on='column_name')
+
+        # df_read_to_merge = df_operations.change_ohlcv_column_type(df_read_to_merge)
+        # df_read_to_merge = df_read_to_merge.astype('object')
+
+        # df_ohlcv_created_to_merge = df_operations.change_ohlcv_column_type(df_ohlcv_created_to_merge)
+
+        # df_ohlcv_created_to_merge = df_ohlcv_created_to_merge.astype('object')
+
+    def update_csv_files_in_directory(self):
+        update_data.get_list_of_csv_files_in_directory()
 
 
 

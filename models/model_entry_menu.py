@@ -12,17 +12,26 @@ class ModelEntry:
         self.final_mode = 0
 
 
+
     def calculate_final_mode(self):
 
-        if self.mode_data_merge == 0 and self.mode_data_oi == 0:
+        if self.mode_data_merge == 1 and self.mode_data_oi == 0:
+            print('creating_data_ohlcv model')
             self.final_mode = 'creating_data_ohlcv'
 
-        elif self.mode_data_merge == 0 and self.mode_data_oi == 1:
+        elif self.mode_data_merge == 1 and self.mode_data_oi == 1:
+            print('creating_data_oi model')
             self.final_mode = 'creating_data_oi'
 
-        elif self.mode_data_merge == 1 and self.mode_data_oi == 0:
+        elif self.mode_data_merge == 0 and self.mode_data_oi == 0:
+            print('merging_data_ohlcv model')
             self.final_mode = 'merging_data_ohlcv'
 
-        elif self.mode_data_merge == 1 and self.mode_data_oi == 1:
+        elif self.mode_data_merge == 0 and self.mode_data_oi == 1:
+            print('merging_data_oi model')
             self.final_mode = 'merging_data_oi'
 
+class ModelUpdate:
+    def __init__(self):
+        self.market_names_in_dir = []
+        self.csv_names_in_dir = []

@@ -12,10 +12,30 @@ def save_df_to_csv(df, market_name, pair, interval):
     last_date_row = df['date'].iloc[-1]
     df.to_csv(f'{symbol} {interval} {last_date_row} {first_date_row}.csv', index=False)
 
+def merge_dfs_ovlcv_oi(df1, df2, market_name, pair):
+    df1 = change_ohlcv_column_type(df1)
+    df2 = change_df_oi_column_type(df2)
+    symbol = market_name + pair
+    df = pd.merge(df1, df2, how='outer')
+    # df = pd.concat([df1, df2]).drop_duplicates()
+
+    first_date_row = df['date'].iloc[0]
+    last_date_row = df['date'].iloc[-1]
+    print(last_date_row)
+    df.to_csv(f'{symbol} {last_date_row} {first_date_row} oi.csv', index=False)
 
 def merge_two_dataframes_oi(df1, df2, market_name, pair):
     symbol = market_name + pair
-    df = pd.merge(df1, df2, how='outer')
+    # df = pd.merge(df1, df2, how='outer')
+    df1 = change_df_oi_column_type(df1)
+    df2 = change_df_oi_column_type(df2)
+
+    df = pd.concat([df1, df2]).drop_duplicates()
+
+    df['datetime'] = pd.to_datetime(df['date'].astype(str) + ' ' + df['time'].astype(str))
+    df = df.drop_duplicates(subset=['datetime'])
+    df.drop(['datetime'], inplace=True, axis='columns')
+
     first_date_row = df['date'].iloc[0]
     last_date_row = df['date'].iloc[-1]
     print(last_date_row)
@@ -23,11 +43,18 @@ def merge_two_dataframes_oi(df1, df2, market_name, pair):
 
 def get_df_merge_two_dataframes_oi(df1, df2):
     df = pd.merge(df1, df2, how='outer')
+
     return df
 
 def merge_two_dataframes_ohlcv(df1, df2, interval, market_name, pair):
     symbol = market_name + pair
-    df = pd.merge(df1, df2, how='outer')
+    # df = pd.merge(df1, df2, how='outer')
+    df = pd.concat([df1, df2]).drop_duplicates()
+
+    df['datetime'] = pd.to_datetime(df['date'].astype(str) + ' ' + df['time'].astype(str))
+    df = df.drop_duplicates(subset=['datetime'])
+    df.drop(['datetime'], inplace=True, axis='columns')
+
     first_date_row = df['date'].iloc[0]
     last_date_row = df['date'].iloc[-1]
     df.to_csv(f'{symbol} {interval} {last_date_row} {first_date_row}.csv', index=False)
@@ -78,6 +105,29 @@ def change_df_column_types(df1, df2):
     df2['TakerBuyVolume'] = df2['TakerBuyVolume'].astype(int)
     df2['sumOpenInterest'] = df2['sumOpenInterest'].astype(int)
     return df1, df2
+
+def change_df_oi_column_type(df1):
+    df1['Open'] = df1['Open'].astype(float)
+    df1['High'] = df1['High'].astype(float)
+    df1['Low'] = df1['Low'].astype(float)
+    df1['Close'] = df1['Close'].astype(float)
+    df1['Volume'] = df1['Volume'].astype(float)
+    df1['NumberOfTrades'] = df1['NumberOfTrades'].astype(int)
+    df1['TakerBuyVolume'] = df1['TakerBuyVolume'].astype(float)
+    df1['sumOpenInterest'] = df1['sumOpenInterest'].astype(float)
+
+    return df1
+
+def change_ohlcv_column_type(df1):
+    # symbol, date, time, Open, High, Low, Close, Volume, NumberOfTrades, TakerBuyVolume
+    df1['Open'] = df1['Open'].astype(float)
+    df1['High'] = df1['High'].astype(float)
+    df1['Low'] = df1['Low'].astype(float)
+    df1['Close'] = df1['Close'].astype(float)
+    df1['Volume'] = df1['Volume'].astype(float)
+    df1['NumberOfTrades'] = df1['NumberOfTrades'].astype(int)
+    df1['TakerBuyVolume'] = df1['TakerBuyVolume'].astype(float)
+    return df1
 
 def get_df_commons(df1, df2):
     df_common = pd.merge(df1, df2, on='NumberOfTrades')

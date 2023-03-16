@@ -7,8 +7,8 @@ class MenuView(Frame):
         self.grid_columnconfigure(0, weight=1)
 
         self.mode_data_merge = IntVar(self, 0)
-        Radiobutton(self, text='Create data', variable=self.mode_data_merge, value=0, command=self.rb_create_merge_listener).grid(row=1, column=0, padx=10, pady=10)
-        Radiobutton(self, text='Merge data', variable=self.mode_data_merge, value=1, command=self.rb_create_merge_listener).grid(row=1, column=2, padx=10, pady=10)
+        Radiobutton(self, text='Create data', variable=self.mode_data_merge, value=1, command=self.rb_create_merge_listener).grid(row=1, column=0, padx=10, pady=10)
+        Radiobutton(self, text='Merge data', variable=self.mode_data_merge, value=0, command=self.rb_create_merge_listener).grid(row=1, column=2, padx=10, pady=10)
 
         self.mode_data_oi = IntVar(self, 0)
 
@@ -18,7 +18,7 @@ class MenuView(Frame):
         self.file_to_merge_entry = Entry(self)
         self.file_to_merge_entry.insert(0, 'XRPUSDT 2023-02-16 2023-02-20 oi.csv')  #name file to merge
         self.file_to_merge_entry.grid(row=4, column=2, padx=10, pady=10)
-        self.file_to_merge_entry['state'] = 'disabled'
+        self.file_to_merge_entry['state'] = 'normal'
 
         label_symbol = Label(self, text='Symbol')
         label_symbol.grid(row=5, column=0, padx=10, pady=10)
@@ -45,18 +45,21 @@ class MenuView(Frame):
         self.start_date_entry.grid(row=8, column=0, padx=10, pady=10)
 
         self.end_date_entry = Entry(self)
-        self.end_date_entry.insert(0, '2023-02-22')
+        self.end_date_entry.insert(0, '2023-02-23')
         self.end_date_entry.grid(row=8, column=2, padx=10, pady=10)
 
         label_interval = Label(self, text='Interval')
         label_interval.grid(row=9, column=0, padx=10, pady=10)
 
         self.interval_entry = Entry(self)
-        self.interval_entry.insert(0, '5m')
+        self.interval_entry.insert(0, '1d')
         self.interval_entry.grid(row=10, column=0, padx=5, pady=5)
 
         self.test_btn = Button(self, text="Pobierz dane")
         self.test_btn.grid(row=10, column=2, padx=10, pady=10)
+
+        self.update_data_btn = Button(self, text="Update danych")
+        self.update_data_btn.grid(row=11, column=2, padx=10, pady=10)
 
     #teoretycznie to lepiej by było stworzyć metodę na kliknięcie pobierającą do modela aktualny stan  radio buttona
 
@@ -73,10 +76,13 @@ class MenuView(Frame):
 
 
     def rb_create_merge_listener(self):
-        print(self.mode_data_merge.get())
-        if self.mode_data_merge.get() == 1:
+        if self.mode_data_merge.get() == 0:
+            print('zmiana na normalny')
+            print(self.mode_data_merge.get())
             self.file_to_merge_entry['state'] = 'normal'
-        elif self.mode_data_merge.get() == 0:
+        elif self.mode_data_merge.get() == 1:
+            print('zmiana na disabled')
+            print(self.mode_data_merge.get())
             self.file_to_merge_entry['state'] = 'disabled'
 
 
