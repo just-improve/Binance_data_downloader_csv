@@ -55,11 +55,14 @@ class MenuView(Frame):
         self.interval_entry.insert(0, '1d')
         self.interval_entry.grid(row=10, column=0, padx=5, pady=5)
 
-        self.test_btn = Button(self, text="Pobierz dane")
-        self.test_btn.grid(row=10, column=2, padx=10, pady=10)
+        self.download_btn = Button(self, text="Pobierz dane")
+        self.download_btn.grid(row=10, column=2, padx=10, pady=10)
 
         self.update_data_btn = Button(self, text="Update danych")
         self.update_data_btn.grid(row=11, column=2, padx=10, pady=10)
+
+        self.test_btn = Button(self, text="Test button")
+        self.test_btn.grid(row=12, column=2, padx=10, pady=10)
 
     #teoretycznie to lepiej by było stworzyć metodę na kliknięcie pobierającą do modela aktualny stan  radio buttona
 

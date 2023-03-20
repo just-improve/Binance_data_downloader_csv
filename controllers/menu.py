@@ -9,15 +9,22 @@ import update_data
 
 
 class MenuController:
-    def __init__(self, model_entry, manager_view):
+    def __init__(self, model_entry, model_update, manager_view):
         self.model_entry = model_entry
+        self.model_update = model_update
         self.manager_view = manager_view
         self.frame = self.manager_view.frames["menu"]
         self._bind()
 
     def _bind(self):
-        self.frame.test_btn.config(command=self.manage_methods)
+        self.frame.download_btn.config(command=self.manage_methods)
         self.frame.update_data_btn.config(command=self.update_csv_files_in_directory)
+        self.frame.test_btn.config(command=self.test_btn_method)
+
+    def test_btn_method(self):
+        pass
+        # df_operations.remove_csv_old_files('BNBUSDT 2023-01-23 2023-03-16 oi.csv')
+        # df_operations.remove_csv_old_files(self.model_update.csv_names_in_dir)
 
     def manage_methods(self):
         self.store_setting()
@@ -35,7 +42,8 @@ class MenuController:
         self.model_entry.calculate_final_mode()
         # pprint(vars(self.model_entry))
 
-    def choose_proper_method(self):
+    def choose_proper_method(self, csv_name_in_dir=None):
+        print(self.model_entry.final_mode)
         if self.model_entry.final_mode == 'creating_data_ohlcv': # and self.model_entry.mode_data_merge == 0:
             print('creating_data_ohlcv')
             df = get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair, self.model_entry.interval,
@@ -77,10 +85,46 @@ class MenuController:
                                        self.model_entry.start_date, self.model_entry.end_date)
             df_oi_ohlcv = df_operations.get_df_merge_two_dataframes_oi(df_ohlcv, df_oi)
             #
-            df_operations.merge_two_dataframes_oi(df_oi_ohlcv, df_oi_read_to_merge, self.model_entry.symbol, self.model_entry.pair)
+            df_operations.merge_two_dataframes_oi(df_oi_ohlcv, df_oi_read_to_merge, self.model_entry.symbol,
+                                                  self.model_entry.pair, self.model_entry.final_mode)
+
+        elif self.model_entry.final_mode == 'update_merge_group_data_oi':
+            file_path = "my_csv_files/{}".format(csv_name_in_dir)
+            df_oi_read_to_merge = df_operations.read_csv_file(file_path)
+
+            df_ohlcv = get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair,
+                                                self.model_entry.interval,
+                                                self.model_entry.start_date, self.model_entry.end_date)
+
+            df_oi = get_oi.get_oi_data(self.model_entry.symbol, self.model_entry.pair,
+                                       self.model_entry.start_date, self.model_entry.end_date)
+            df_oi_ohlcv = df_operations.get_df_merge_two_dataframes_oi(df_ohlcv, df_oi)
+            #
+            df_operations.merge_two_dataframes_oi(df_oi_ohlcv, df_oi_read_to_merge, self.model_entry.symbol,
+                                                  self.model_entry.pair, self.model_entry.final_mode)
+
+            print('')
+
+    def update_csv_files_in_directory(self):
+        self.model_update.csv_names_in_dir, self.model_update.market_names_in_dir =  update_data.get_csv_files_names_and_market_names_in_directory()
+        self.model_entry.final_mode = 'update_merge_group_data_oi'
+        self.model_entry.interval = '5m'
+        self.model_entry.symbol = 'will be setted'
+        self.model_entry.end_date = update_data.get_today_date()
+
+        for csv_name_in_dir in self.model_update.csv_names_in_dir:
+            self.model_entry.symbol, self.model_entry.start_date = \
+                update_data.extract_market_name_from_csv_file(csv_name_in_dir)
+            self.choose_proper_method(csv_name_in_dir)
+
+        df_operations.remove_csv_old_files(self.model_update.csv_names_in_dir)
 
 
-        # zostało łączenie danych tylko
+
+
+
+
+  # zostało łączenie danych tylko
 
         # df1['column_name'] = df1['column_name'].astype('float64')
         # merged_df = pd.merge(df1, df2, on='column_name')
@@ -91,13 +135,3 @@ class MenuController:
         # df_ohlcv_created_to_merge = df_operations.change_ohlcv_column_type(df_ohlcv_created_to_merge)
 
         # df_ohlcv_created_to_merge = df_ohlcv_created_to_merge.astype('object')
-
-    def update_csv_files_in_directory(self):
-        update_data.get_list_of_csv_files_in_directory()
-
-
-
-
-
-
-
