@@ -18,8 +18,8 @@ class MenuController:
 
     def _bind(self):
         self.frame.download_btn.config(command=self.manage_methods)
-        self.frame.update_data_btn.config(command=self.update_csv_files_in_directory)
-        self.frame.test_btn.config(command=self.test_btn_method)
+        self.frame.update_data_oi_btn.config(command=self.update_csv_files_in_directory_oi)
+        self.frame.update_data_ohlcv.config(command=self.update_csv_files_in_directory_ohlcv)
 
     def test_btn_method(self):
         pass
@@ -28,7 +28,7 @@ class MenuController:
 
     def manage_methods(self):
         self.store_setting()
-        self.choose_proper_method()
+        self.choose_proper_mode()
 
     def store_setting(self):
         self.model_entry.mode_data_merge = self.frame.mode_data_merge.get()
@@ -42,14 +42,14 @@ class MenuController:
         self.model_entry.calculate_final_mode()
         # pprint(vars(self.model_entry))
 
-    def choose_proper_method(self, csv_name_in_dir=None):
+    def choose_proper_mode(self, csv_name_in_dir=None):
         print(self.model_entry.final_mode)
         if self.model_entry.final_mode == 'creating_data_ohlcv': # and self.model_entry.mode_data_merge == 0:
             print('creating_data_ohlcv')
             df = get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair, self.model_entry.interval,
                                      self.model_entry.start_date, self.model_entry.end_date)
             '''types setting'''
-            df_operations.save_df_to_csv(df, self.model_entry.symbol, self.model_entry.pair, self.model_entry.interval)
+            df_operations.save_df_to_csv_ohlcv(df, self.model_entry.symbol, self.model_entry.pair, self.model_entry.interval)
 
         elif self.model_entry.final_mode == 'creating_data_oi': #and self.model_entry.mode_data_merge == 0:
             print('creating_data_oi')
@@ -70,7 +70,7 @@ class MenuController:
 
             df_operations.merge_two_dataframes_ohlcv(df_ohlcv_created_to_merge, df_read_to_merge,
                                                      self.model_entry.interval, self.model_entry.symbol,
-                                                     self.model_entry.pair)
+                                                     self.model_entry.pair, self.model_entry.final_mode)
             #
             # print(df_read_to_merge)
 
@@ -89,7 +89,7 @@ class MenuController:
                                                   self.model_entry.pair, self.model_entry.final_mode)
 
         elif self.model_entry.final_mode == 'update_merge_group_data_oi':
-            file_path = "my_csv_files/{}".format(csv_name_in_dir)
+            file_path = "oi_csv_data/{}".format(csv_name_in_dir)
             df_oi_read_to_merge = df_operations.read_csv_file(file_path)
 
             df_ohlcv = get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair,
@@ -103,21 +103,52 @@ class MenuController:
             df_operations.merge_two_dataframes_oi(df_oi_ohlcv, df_oi_read_to_merge, self.model_entry.symbol,
                                                   self.model_entry.pair, self.model_entry.final_mode)
 
-            print('')
+            print('') #update_data_ohlcv
 
-    def update_csv_files_in_directory(self):
-        self.model_update.csv_names_in_dir, self.model_update.market_names_in_dir =  update_data.get_csv_files_names_and_market_names_in_directory()
+        # należałoby też czytać pair i symbol poprawnie wtedy by było profesjonalnie
+        elif self.model_entry.final_mode == 'update_data_ohlcv':
+            file_path = "ohlcv_csv_data/{}".format(csv_name_in_dir)
+            df_read_to_merge = df_operations.read_csv_file(file_path)
+            df_ohlcv_created_to_merge = get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair,
+                                                                 self.model_entry.interval,
+                                                                 self.model_entry.start_date, self.model_entry.end_date)
+
+            df_operations.merge_two_dataframes_ohlcv(df_ohlcv_created_to_merge, df_read_to_merge,
+                                                     self.model_entry.interval, self.model_entry.symbol,
+                                                     self.model_entry.pair, self.model_entry.final_mode)
+
+    def update_csv_files_in_directory_oi(self):
+        self.model_update.csv_names_in_dir = update_data.get_csv_files_names_and_market_names_in_directory_oi()
         self.model_entry.final_mode = 'update_merge_group_data_oi'
         self.model_entry.interval = '5m'
-        self.model_entry.symbol = 'will be setted'
         self.model_entry.end_date = update_data.get_today_date()
 
-        for csv_name_in_dir in self.model_update.csv_names_in_dir:
-            self.model_entry.symbol, self.model_entry.start_date = \
-                update_data.extract_market_name_from_csv_file(csv_name_in_dir)
-            self.choose_proper_method(csv_name_in_dir)
+        if len(self.model_update.csv_names_in_dir) > 0:
+            for csv_name_in_dir in self.model_update.csv_names_in_dir:
+                self.model_entry.symbol, self.model_entry.start_date = \
+                    update_data.extract_market_name_end_date_from_csv_file(csv_name_in_dir)
+                self.choose_proper_mode(csv_name_in_dir)
 
-        df_operations.remove_csv_old_files(self.model_update.csv_names_in_dir)
+            df_operations.remove_csv_old_files(self.model_update.csv_names_in_dir)
+        else:
+            print('no oi data to update')
+
+    def update_csv_files_in_directory_ohlcv(self):
+        self.model_update.csv_names_in_dir = update_data.get_csv_files_names_and_market_names_in_directory_ohlcv()
+        self.model_entry.final_mode = 'update_data_ohlcv'
+        self.model_entry.end_date = update_data.get_today_date()
+
+        if len(self.model_update.csv_names_in_dir) > 0:
+            for csv_name_in_dir in self.model_update.csv_names_in_dir:
+                self.model_entry.symbol, self.model_entry.start_date = \
+                    update_data.extract_market_name_end_date_from_csv_file(csv_name_in_dir)
+                self.model_entry.interval = update_data.extract_interval_from_csv_file(csv_name_in_dir)
+                print('')
+
+                self.choose_proper_mode(csv_name_in_dir)
+            df_operations.remove_csv_old_files_ohlcv(self.model_update.csv_names_in_dir)
+        else:
+            print('no csv files to update')
 
 
 

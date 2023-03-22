@@ -33,5 +33,5 @@ class ModelEntry:
 
 class ModelUpdate:
     def __init__(self):
-        self.market_names_in_dir = []
+        # self.market_names_in_dir = []
         self.csv_names_in_dir = []

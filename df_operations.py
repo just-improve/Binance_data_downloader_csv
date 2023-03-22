@@ -7,11 +7,15 @@ one_day_as_ts = 86400000
 half_day_as_ts = 43200000
 thirty_days_as_ts = 2592000000
 
-def save_df_to_csv(df, market_name, pair, interval):
+def save_df_to_csv_ohlcv(df_ohlcv, market_name, pair, interval):
     symbol = market_name + pair
-    first_date_row = df['date'].iloc[0]
-    last_date_row = df['date'].iloc[-1]
-    df.to_csv(f'{symbol} {interval} {last_date_row} {first_date_row}.csv', index=False)
+    first_date_row = df_ohlcv['date'].iloc[0]
+    last_date_row = df_ohlcv['date'].iloc[-1]
+    # df_ohlcv.to_csv(f'{symbol} {interval} {last_date_row} {first_date_row}.csv', index=False)
+
+    file_name = f'{symbol} {interval} {last_date_row} {first_date_row}.csv'
+    file_path = "ohlcv_csv_data/{}".format(file_name)
+    df_ohlcv.to_csv(file_path, index=False)
 
 def merge_dfs_ovlcv_oi(df1, df2, market_name, pair):
     '''te dwie metody tutaj użyte wywałały błędy'''
@@ -25,7 +29,11 @@ def merge_dfs_ovlcv_oi(df1, df2, market_name, pair):
     first_date_row = df['date'].iloc[0]
     last_date_row = df['date'].iloc[-1]
     print(last_date_row)
-    df.to_csv(f'{symbol} {last_date_row} {first_date_row} oi.csv', index=False)
+    # df.to_csv(f'{symbol} {last_date_row} {first_date_row} oi.csv', index=False)
+
+    file_name = f'{symbol} {last_date_row} {first_date_row} oi.csv'
+    file_path = "oi_csv_data/{}".format(file_name)
+    df.to_csv(file_path, index=False)
 
 def merge_two_dataframes_oi(df1, df2, market_name, pair, model_entry_final_mode):
     symbol = market_name + pair
@@ -47,7 +55,7 @@ def merge_two_dataframes_oi(df1, df2, market_name, pair, model_entry_final_mode)
 
     elif model_entry_final_mode == 'update_merge_group_data_oi':
         file_name = f'{symbol} {last_date_row} {first_date_row} oi.csv'
-        file_path = "my_csv_files/{}".format(file_name)
+        file_path = "oi_csv_data/{}".format(file_name)
         df.to_csv(file_path, index=False)
 
 
@@ -56,7 +64,7 @@ def get_df_merge_two_dataframes_oi(df1, df2):
 
     return df
 
-def merge_two_dataframes_ohlcv(df1, df2, interval, market_name, pair):
+def merge_two_dataframes_ohlcv(df1, df2, interval, market_name, pair, model_entry_final_mode):
     symbol = market_name + pair
     # df = pd.merge(df1, df2, how='outer')
     df = pd.concat([df1, df2]).drop_duplicates()
@@ -67,7 +75,14 @@ def merge_two_dataframes_ohlcv(df1, df2, interval, market_name, pair):
 
     first_date_row = df['date'].iloc[0]
     last_date_row = df['date'].iloc[-1]
-    df.to_csv(f'{symbol} {interval} {last_date_row} {first_date_row}.csv', index=False)
+
+    if model_entry_final_mode == 'update_data_ohlcv':
+        file_name = f'{symbol} {interval} {last_date_row} {first_date_row}.csv'
+        file_path = "ohlcv_csv_data/{}".format(file_name)
+        df.to_csv(file_path, index=False)
+
+    elif model_entry_final_mode == 'merging_data_ohlcv':
+        df.to_csv(f'{symbol} {interval} {last_date_row} {first_date_row}.csv', index=False)
 
 def read_csv_file(file_name):
     df = pd.read_csv(file_name)
@@ -146,18 +161,12 @@ def get_df_commons(df1, df2):
 
 def remove_csv_old_files(csv_names_in_dir):
     for csv_name in csv_names_in_dir:
-        file_path = "my_csv_files/{}".format(csv_name)
+        file_path = "oi_csv_data/{}".format(csv_name)
         os.remove(file_path)
         print(file_path)
 
-
-        # os.remove(csv_name)
-    # names_csv_files = [os.path.basename(file) for file in csv_names_in_dir]
-    # names_csv_files = [os.path.basename(csv_file_name) for csv_file_name in csv_names_in_dir]
-    # os.path.basename(csv_file_name)
-    # os.remove(csv_names_in_dir)
-
-
-    # path = 'C:\\Users\\xxx\\PycharmProjects\\Binance Data Downloader Gui\\my_csv_files'
-    # path = 'my_csv_files/'
-
+def remove_csv_old_files_ohlcv(csv_names_in_dir):
+    for csv_name in csv_names_in_dir:
+        file_path = "ohlcv_csv_data/{}".format(csv_name)
+        os.remove(file_path)
+        print(file_path)
