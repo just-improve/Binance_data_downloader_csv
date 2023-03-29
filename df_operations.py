@@ -88,7 +88,6 @@ def read_csv_file(file_name):
     df = pd.read_csv(file_name)
     return df
 
-
 # to nie jest metoda dotycząca df
 def calculate_time_substracted(interval):
     time_substracted = one_day_as_ts

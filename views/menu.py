@@ -64,6 +64,9 @@ class MenuView(Frame):
         self.update_data_ohlcv = Button(self, text="Update button Ohlcv")
         self.update_data_ohlcv.grid(row=12, column=2, padx=10, pady=10)
 
+        self.all_tickers_btn = Button(self, text="All tickers")
+        self.all_tickers_btn.grid(row=13, column=2, padx=10, pady=10)
+
     #teoretycznie to lepiej by było stworzyć metodę na kliknięcie pobierającą do modela aktualny stan  radio buttona
 
     def rb_ohlcv_oi_listener(self):

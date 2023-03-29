@@ -29,6 +29,18 @@ def extract_market_name_end_date_from_csv_file(csv_file_name):
     end_date_csv_file = csv_file_name.split(' ')[2]
     return market_name, end_date_csv_file
 
+def extract_end_date_from_csv_file(csv_file_name):
+    end_date_csv_file = csv_file_name.split(' ')[2]
+    return end_date_csv_file
+
+def extract_market_from_csv_file(csv_file_name):
+    market_name_2 = csv_file_name.split(' ')[0]
+    market_name_2 = market_name_2[:len(market_name_2)-4]
+
+    market_name = csv_file_name.split(' ')[0][:3]
+    print('')
+    return market_name
+
 def extract_interval_from_csv_file(csv_file_name):
     interval = csv_file_name.split(' ')[1]
     return interval

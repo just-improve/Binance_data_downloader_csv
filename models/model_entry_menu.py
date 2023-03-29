@@ -35,3 +35,5 @@ class ModelUpdate:
     def __init__(self):
         # self.market_names_in_dir = []
         self.csv_names_in_dir = []
+        self.usdt_pairs = []
+        self.usdt_symbols_only = []
