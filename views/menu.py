@@ -27,7 +27,7 @@ class MenuView(Frame):
         label_currency.grid(row=5, column=2, padx=10, pady=10)
 
         self.symbol_entry = Entry(self)
-        self.symbol_entry.insert(0,'XRP')
+        self.symbol_entry.insert(0,'BTC')
         self.symbol_entry.grid(row=6, column=0, padx=10, pady=10)
 
         self.pair_entry = Entry(self)
@@ -41,11 +41,11 @@ class MenuView(Frame):
         label_end_date.grid(row=7, column=2, padx=10, pady=10)
 
         self.start_date_entry = Entry(self)
-        self.start_date_entry.insert(0, '2023-02-18')
+        self.start_date_entry.insert(0, '2023-03-10')
         self.start_date_entry.grid(row=8, column=0, padx=10, pady=10)
 
         self.end_date_entry = Entry(self)
-        self.end_date_entry.insert(0, '2023-02-23')
+        self.end_date_entry.insert(0, '2023-03-15')
         self.end_date_entry.grid(row=8, column=2, padx=10, pady=10)
 
         label_interval = Label(self, text='Interval')

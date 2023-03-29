@@ -73,6 +73,7 @@ class MenuController:
             df_ohlcv = get_ohlcv.get_ohlcv_data(self.model_entry.symbol, self.model_entry.pair, self.model_entry.interval,
                                      self.model_entry.start_date, self.model_entry.end_date)
 
+            #TypeError: open_interest_hist() missing 1 required positional argument: 'period'
             df_oi = get_oi.get_oi_data(self.model_entry.symbol, self.model_entry.pair,
                                      self.model_entry.start_date, self.model_entry.end_date)
             df_operations.merge_dfs_ovlcv_oi(df_ohlcv, df_oi, self.model_entry.symbol, self.model_entry.pair)
@@ -122,7 +123,6 @@ class MenuController:
 
             print('') #update_data_ohlcv
 
-        # należałoby też czytać pair i symbol poprawnie wtedy by było profesjonalnie
         elif self.model_entry.final_mode == 'update_data_ohlcv':
             file_path = "ohlcv_csv_data/{}".format(csv_name_in_dir)
             df_read_to_merge = df_operations.read_csv_file(file_path)
@@ -142,12 +142,8 @@ class MenuController:
 
         if len(self.model_update.csv_names_in_dir) > 0:
             for csv_name_in_dir in self.model_update.csv_names_in_dir:
-                # self.model_entry.symbol, self.model_entry.start_date = \
-                #     update_data.extract_market_name_end_date_from_csv_file(csv_name_in_dir)
-
-                self.model_entry.symbol = update_data.extract_market_from_csv_file(csv_name_in_dir)
+                self.model_entry.symbol, self.model_entry.pair = update_data.extract_market_from_csv_file(csv_name_in_dir)
                 self.model_entry.start_date = update_data.extract_end_date_from_csv_file(csv_name_in_dir)
-                print('')
                 self.choose_proper_mode(csv_name_in_dir)
 
             df_operations.remove_csv_old_files(self.model_update.csv_names_in_dir)
@@ -161,12 +157,9 @@ class MenuController:
 
         if len(self.model_update.csv_names_in_dir) > 0:
             for csv_name_in_dir in self.model_update.csv_names_in_dir:
-                # self.model_entry.symbol, self.model_entry.start_date = \
-                #     update_data.extract_market_name_end_date_from_csv_file(csv_name_in_dir)
 
-                self.model_entry.symbol = update_data.extract_market_from_csv_file(csv_name_in_dir)
+                self.model_entry.symbol, self.model_entry.pair = update_data.extract_market_from_csv_file(csv_name_in_dir)
                 self.model_entry.start_date = update_data.extract_end_date_from_csv_file(csv_name_in_dir)
-
                 self.model_entry.interval = update_data.extract_interval_from_csv_file(csv_name_in_dir)
                 print('')
 

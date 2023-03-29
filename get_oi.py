@@ -18,10 +18,12 @@ def get_oi_data(symbol, pair, start_date, end_date):
     if pair == 'USDT' or pair == 'BUSD':
         market_name = symbol+pair
         binance_client = binance_client_um
+        print('')
 
     elif pair == 'USD':
         market_name = symbol+pair+'_PERP'
         binance_client = binance_client_cm
+        print('')
 
     else:
         print('wrong pair')
