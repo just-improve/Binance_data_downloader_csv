@@ -10,6 +10,7 @@ class ModelEntry:
         self.start_date = ' '
         self.end_date = ' '
         self.final_mode = 0
+        self.csv_names_in_dir = ''
 
 
 
