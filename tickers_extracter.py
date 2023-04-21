@@ -4,10 +4,12 @@ from binance.um_futures import UMFutures
 
 def get_tickers_list():
     binance_client_um = UMFutures()
+    taker_long_short_ratio = binance_client_um.taker_long_short_ratio('BTCUSDT','5m',limit=30)
     ticker_price = binance_client_um.ticker_price()
     usdt_only_symbols, usdt_pairs = get_all_usdt_symbols_list(ticker_price)
     print('')
     return usdt_only_symbols, usdt_pairs
+
 def get_all_usdt_symbols_list(all_tickers):
     usdt_only_symbols = []
     usdt_pairs = []
@@ -20,3 +22,4 @@ def get_all_usdt_symbols_list(all_tickers):
                     usdt_pairs.append(value)
 
     return usdt_only_symbols, usdt_pairs
+
