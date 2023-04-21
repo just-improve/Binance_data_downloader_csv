@@ -25,7 +25,7 @@ class MenuController:
         # creating folders if doesnt exists
 
     def _bind(self):
-        self.frame.download_btn.config(command=self.setup)
+        self.frame.download_btn.config(command=self.getData)  #v5 naming
         self.frame.update_data_oi_btn.config(command=self.update_csv_files_in_directory_oi)
         self.frame.update_data_ohlcv.config(command=self.update_csv_files_in_directory_ohlcv)
         self.frame.all_tickers_btn.config(command=self.get_all_tickers)
